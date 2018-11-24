@@ -8,14 +8,14 @@ const create = ({body}, res, next) =>
     .then(success(res, 201))
     .catch(next)
 
-// show
+// show all (short)
 const index = ({query}, res, next) =>
     Customer.find(query)
     .then((customers) => customers.map((customer) => customer.view()))
     .then(success(res))
     .catch(next)
 
-// show subdoc? (detailed)
+// show one (detailed)
 const show = ({params}, res, next) => 
     Customer.findById({_id: params.id})
     .then(notFound(res))
