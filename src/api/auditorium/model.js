@@ -1,25 +1,51 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
+const Customer = require('../customer/model').model
+const index=require('../customer/controller').index
+
+const SeatSchema = new mongoose.Schema({
+    row: {
+        type: Number,
+        required: true
+    },
+    column: {
+        type: Number,
+        required: true
+    },
+    reserver: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    }
+}, {
+        timestamps: true
+    })
+
+SeatSchema.methods = {
+    view(name) {
+        const view={
+            id: this._id,
+            row: this.row,
+            column: this.column
+        }
+        return name?
+        // w/ name
+        {
+            ...view,
+            reserver: "WIP"//index().map((customer) => customer._id===this.reserver?customer.view():null)
+        }:
+        {
+            ...view,
+            reserver: this.reserver
+        }
+    }
+}
 
 const AuditoriumSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    seats: [{
-        row: {
-            type: Number,
-            required: true
-        },
-        column: {
-            type: Number,
-            required: true
-        },
-        reserver: {
-            type: mongoose.Schema.Types.ObjectId,
-            default: null
-        }
-    }]
+    seats: [SeatSchema]
 }, {
         timestamps: true
     })
@@ -34,17 +60,19 @@ AuditoriumSchema.methods = {
         const view = {
             // simple view
             id: this._id,
-            name: this.name,
-            seats: this.seats.length,
-            reserved: count
+            name: this.name
         }
 
         return full ? {
             ...view,
-            seats: this.seats,
+            seats: this.seats.map((seat) => seat.view()),
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
-        } : view
+        } : {
+            ...view,
+            seats: this.seats.length,
+            reserved: count
+        }
     }
 }
 
