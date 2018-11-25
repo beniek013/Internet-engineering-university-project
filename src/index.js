@@ -7,7 +7,7 @@ const api = require('./api')
 const mongoose = require('./services/mongoose')
 const customer = require('./api/customer')
 const movie = require('./api/movie')
-const auditorium=require('./api/auditorium')
+const room=require('./api/room')
 
 const app = express(apiRoot, api)
 const server = http.createServer(app)
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 });
 app.use('/movie', movie)
 app.use('/customer', customer)
-app.use('/auditorium', auditorium)
+app.use('/room', room)
 
 
 setImmediate(() => {

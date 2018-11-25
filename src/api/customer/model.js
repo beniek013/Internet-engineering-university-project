@@ -1,7 +1,45 @@
 const mongoose=require('mongoose')
 const {Schema} = require('mongoose')
 
+const ReservationSchema=new mongoose.Schema({
+    movie: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    showing: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    seat: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    }
+}, {
+    timestamps: true
+})
+
+ReservationSchema.methods={
+    view(full) {
+        const view = {
+            // simple view
+            id: this._id,
+            movie: this.movie,
+            showing: this.showing
+        }
+
+        return full ? {
+            ...view,
+            seat: this.seat
+        } : view
+    }
+}
+
 const CustomerSchema=new mongoose.Schema({
+    email: {
+        type: String,
+        required: true,
+        index: {unique: true}
+    },
     firstname: {
         type: String,
         required: true
@@ -17,11 +55,7 @@ const CustomerSchema=new mongoose.Schema({
     address: {
         type: String,
     },
-    email: {
-        type: String,
-        required: true,
-        index: {unique: true}
-    }
+    reservations: [ReservationSchema]
     // discount_type: {}
 }, {
     timestamps: true
@@ -32,18 +66,22 @@ CustomerSchema.methods = {
         const view = {
             // simple view
             id: this._id,
-            firstname: this.firstname,
-            lastname: this.lastname
+            email: this.email
         }
 
         return full ? {
             ...view,
+            firstname: this.firstname,
+            lastname: this.lastname,
             born: this.born,
             address: this.address,
-            email: this.email,
+            reservations: this.reservations.map((res) => res.view(true)),
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
-        } : view
+        } : {
+            ...view,
+            reservations: this.reservations.length
+        }
     }
 }
 

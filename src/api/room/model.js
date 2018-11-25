@@ -12,35 +12,26 @@ const SeatSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    reserver: {
-        type: mongoose.Schema.Types.ObjectId,
-        default: null
+    reserved: {
+        type: Boolean,
+        default: false
     }
 }, {
         timestamps: true
     })
 
 SeatSchema.methods = {
-    view(name) {
-        const view={
+    view() {
+        return {
             id: this._id,
             row: this.row,
-            column: this.column
-        }
-        return name?
-        // w/ name
-        {
-            ...view,
-            reserver: "WIP"//index().map((customer) => customer._id===this.reserver?customer.view():null)
-        }:
-        {
-            ...view,
-            reserver: this.reserver
+            column: this.column,
+            reserved: this.reserved
         }
     }
 }
 
-const AuditoriumSchema = new mongoose.Schema({
+const RoomSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -50,11 +41,11 @@ const AuditoriumSchema = new mongoose.Schema({
         timestamps: true
     })
 
-AuditoriumSchema.methods = {
+RoomSchema.methods = {
     view(full) {
         let count = 0, i = this.seats.length
         while (i--) {
-            if (this.seats[i].reserver != null)
+            if (this.seats[i].reserved ===true)
                 count++;
         }
         const view = {
@@ -77,6 +68,6 @@ AuditoriumSchema.methods = {
 }
 
 //const SeatModel = mongoose.model('Seat', SeatSchema)
-const model = mongoose.model('Auditorium', AuditoriumSchema)
+const model = mongoose.model('Room', RoomSchema)
 
-module.exports = { model, AuditoriumSchema }
+module.exports = { model, RoomSchema }
