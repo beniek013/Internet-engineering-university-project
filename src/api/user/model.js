@@ -2,11 +2,7 @@ const mongoose=require('mongoose')
 const {Schema} = require('mongoose')
 
 const ReservationSchema=new mongoose.Schema({
-    movie: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
-    showing: {
+    showingId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
@@ -23,8 +19,7 @@ ReservationSchema.methods={
         const view = {
             // simple view
             id: this._id,
-            movie: this.movie,
-            showing: this.showing
+            showingId: this.showingId
         }
 
         return full ? {
@@ -34,17 +29,17 @@ ReservationSchema.methods={
     }
 }
 
-const CustomerSchema=new mongoose.Schema({
+const UserSchema=new mongoose.Schema({
     email: {
         type: String,
         required: true,
         index: {unique: true}
     },
-    firstname: {
+    firstName: {
         type: String,
         required: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true
     },
@@ -61,7 +56,7 @@ const CustomerSchema=new mongoose.Schema({
     timestamps: true
 })
 
-CustomerSchema.methods = {
+UserSchema.methods = {
     view(full) {
         const view = {
             // simple view
@@ -71,8 +66,8 @@ CustomerSchema.methods = {
 
         return full ? {
             ...view,
-            firstname: this.firstname,
-            lastname: this.lastname,
+            firstName: this.firstName,
+            lastName: this.lastName,
             born: this.born,
             address: this.address,
             reservations: this.reservations.map((res) => res.view(true)),
@@ -85,6 +80,6 @@ CustomerSchema.methods = {
     }
 }
 
-const model = mongoose.model('Customer', CustomerSchema)
+const model = mongoose.model('User', UserSchema)
 
-module.exports = {model, CustomerSchema}
+module.exports = {model, UserSchema}

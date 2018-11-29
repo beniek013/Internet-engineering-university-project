@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
-const Customer = require('../customer/model').model
-const index=require('../customer/controller').index
+//const Customer = require('../customer/model').model
+//const index=require('../customer/controller').index
 
 const SeatSchema = new mongoose.Schema({
     row: {
@@ -12,10 +12,6 @@ const SeatSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    reserved: {
-        type: Boolean,
-        default: false
-    }
 }, {
         timestamps: true
     })
@@ -25,8 +21,7 @@ SeatSchema.methods = {
         return {
             id: this._id,
             row: this.row,
-            column: this.column,
-            reserved: this.reserved
+            column: this.column
         }
     }
 }
@@ -43,11 +38,6 @@ const RoomSchema = new mongoose.Schema({
 
 RoomSchema.methods = {
     view(full) {
-        let count = 0, i = this.seats.length
-        while (i--) {
-            if (this.seats[i].reserved ===true)
-                count++;
-        }
         const view = {
             // simple view
             id: this._id,
@@ -61,13 +51,11 @@ RoomSchema.methods = {
             updatedAt: this.updatedAt
         } : {
             ...view,
-            seats: this.seats.length,
-            reserved: count
+            seats: this.seats.length
         }
     }
 }
 
-//const SeatModel = mongoose.model('Seat', SeatSchema)
 const model = mongoose.model('Room', RoomSchema)
 
 module.exports = { model, RoomSchema }

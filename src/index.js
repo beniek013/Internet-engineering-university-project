@@ -5,14 +5,15 @@ const { env, port, ip, apiRoot, mongo } = require('./config')
 const express = require('./services/express')
 const api = require('./api')
 const mongoose = require('./services/mongoose')
-const customer = require('./api/customer')
+const user = require('./api/user')
 const movie = require('./api/movie')
 const room=require('./api/room')
+const showing=require('./api/showing')
 
 const app = express(apiRoot, api)
 const server = http.createServer(app)
 mongoose.connect(mongo.uri)
-
+mongoose.Promise = global.Promise;
 
 app.use((req, res, next) => {
     console.log(`${new Date().toString()} => ${req.originalUrl}`, req.body)
@@ -22,8 +23,9 @@ app.get('/', (req, res) => {
     res.status(200).send('working??')
 });
 app.use('/movie', movie)
-app.use('/customer', customer)
+app.use('/user', user)
 app.use('/room', room)
+app.use('/showing', showing)
 
 
 setImmediate(() => {

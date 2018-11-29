@@ -1,42 +1,42 @@
 const { success, notFound } = require('../../services/response/')
-const Customer=require('./model').model
+const User=require('./model').model
 
 // create new customer
 const create = ({body}, res, next) =>
-    Customer.create(body)
-    .then((customer) => customer.view(true))
+    User.create(body)
+    .then((user) => user.view(true))
     .then(success(res, 201))
     .catch(next)
 
 // show all (short)
 const index = ({query}, res, next) =>
-    Customer.find(query)
-    .then((customers) => customers.map((customer) => customer.view()))
+    User.find(query)
+    .then((user) => user.map((user) => user.view()))
     .then(success(res))
     .catch(next)
 
 // show one (detailed)
-const show = ({params}, res, next) => 
-    Customer.findById({_id: params.id})
+const show = ({params}, res, next) =>
+    User.findById({_id: params.id})
     .then(notFound(res))
-    .then((customer) => customer ? customer.view(true) : null)
+    .then((user) => user ? user.view(true) : null)
     .then(success(res))
     .catch(next)
 
 // update
 const update = ({body, params}, res, next) =>
-    Customer.findById({_id: params.id})
+    User.findById({_id: params.id})
     .then(notFound(res))
-    .then((customer) => customer ? Object.assign(customer, body).save() : null)
-    .then((customer) => customer ? customer.view(true) : null)
+    .then((user) => user ? Object.assign(customer, body).save() : null)
+    .then((user) => user ? user.view(true) : null)
     .then(success(res))
     .catch(next)
 
 // delete
 const destroy = ({params}, res, next) =>
-    Customer.findById({_id: params.id})
+    User.findById({_id: params.id})
     .then(notFound(res))
-    .then((customer) => customer ? customer.remove() : null)
+    .then((user) => user ? user.remove() : null)
     .then(success(res, 204))
     .catch(next)
 

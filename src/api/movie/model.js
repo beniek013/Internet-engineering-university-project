@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = require('mongoose')
 
-const ShowingSchema = new mongoose.Schema({
+/*const ShowingSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true
@@ -28,7 +28,7 @@ ShowingSchema.methods = {
             updatedAt: this.updatedAt
         } : view
     }
-}
+}*/
 
 const MovieSchema = new mongoose.Schema({
     name: {
@@ -39,15 +39,14 @@ const MovieSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    duration: {
-        type: Date,
+    duration: {         //ilosc ,minut
+        type: Number,
         required: true
     },
     ageCategory: {
         type: Number,
         required: true
-    },
-    showings: [ShowingSchema]
+    }
 }, {
         timestamps: true
     })
