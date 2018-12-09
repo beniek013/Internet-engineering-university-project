@@ -1,12 +1,6 @@
 const { success, notFound } = require('../../services/response/')
 const User=require('./model').model
-
-// create new customer
-const create = ({body}, res, next) =>
-    User.create(body)
-    .then((user) => user.view(true))
-    .then(success(res, 201))
-    .catch(next)
+const { sign } = require('../../services/jwt')
 
 // show all (short)
 const index = ({query}, res, next) =>
@@ -23,6 +17,22 @@ const show = ({params}, res, next) =>
     .then(success(res))
     .catch(next)
 
+// create new customer
+const create = ({body}, res, next) =>
+    User.create(body)
+    .then((user) => user.view(true))
+    .then(success(res, 201))
+    .catch(next)
+
+// authorize password
+const auth = (req, res, next) => {
+    const { user } = req
+    sign(user)
+        .then((token) => ({token, user: user.view(true)}))
+        .then(success(res, 201))
+        .catch(next)
+    }
+    
 // update
 const update = ({body, params}, res, next) =>
     User.findById({_id: params.id})
@@ -42,6 +52,6 @@ const destroy = ({params}, res, next) =>
 
 
 module.exports = {
-    create, index, show, update, destroy
+    create, index, show, update, destroy, auth
 }
     

@@ -1,37 +1,12 @@
 const mongoose = require('mongoose')
-const { Schema } = require('mongoose')
-//const Customer = require('../customer/model').model
-//const index=require('../customer/controller').index
-
-const SeatSchema = new mongoose.Schema({
-    row: {
-        type: Number,
-        required: true
-    },
-    column: {
-        type: Number,
-        required: true
-    },
-}, {
-        timestamps: true
-    })
-
-SeatSchema.methods = {
-    view() {
-        return {
-            id: this._id,
-            row: this.row,
-            column: this.column
-        }
-    }
-}
+const Seat = require('./model-seat').SeatSchema
 
 const RoomSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    seats: [SeatSchema]
+    seats: [Seat]
 }, {
         timestamps: true
     })

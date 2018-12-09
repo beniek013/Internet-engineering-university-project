@@ -36,14 +36,16 @@ const config = {
             options: {
                 debug: true
             }
-        }
+        },
+        jwtSecret: '48mXwHcnH8qEwWgzo24y5BEIxgAU0a'
     },
     production: {
         ip: process.env.IP || undefined,
         port: process.env.PORT || 8080,
         mongo: {
             uri: '### adres serwera produkcyjnego ###',
-        }
+        },
+        jwtSecret: process.env.SECRET,       // Nigdy nie trzymamy hasel do produkcji w konfiguracji!
     }
 }
 

@@ -1,21 +1,41 @@
+const bcrypt = require('bcrypt')
+const { token, password } = require('../../services/passport')
 const { Router } = require('express')
-const { create, index, show, update, destroy } = require('./controller')
+const { create, index, show, update, destroy, auth } = require('./controller')
+const {createReservation, showReservation}=require('./controller-reservations')
 
 const router = new Router()
+
+router.get('/',
+  token({required:true, roles:['admin']}),
+  index)
+
+router.get('/profile',
+  token({required:true}),
+  show)
 
 router.post('/',
   create)
 
-router.get('/',
-  index)
+router.post('/auth',
+  password(),
+  auth)
 
-router.get('/:id',
-  show)
-
-router.put('/:id',
+router.put('/',
+  token({required: true}),
   update)
 
 router.delete('/:id',
+  token({required: true, roles: ['admin']}),
   destroy)
+
+router.get('/:id/reservations',
+  token({required:true}),
+  showReservation)
+
+router.post('/:id/reservations',
+  token({ required: true }),
+  createReservation
+)
 
 module.exports = router
