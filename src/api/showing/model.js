@@ -8,6 +8,10 @@ const ShowingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
+    reservations:{
+        type: [Schema.ObjectId],
+        ref: 'Reservation'
+    },
     date: {
         type: Date,
         required: true
@@ -19,17 +23,18 @@ const ShowingSchema = new mongoose.Schema({
 
 ShowingSchema.methods = {
     view(full) {
-        const view = {
-            id: this._id,
-            movieId: this.movieId,
-            column: this.date
+        let view = {}
+        let fields = ['date', 'movieId',]
+
+        if (full) {
+            fields = [...fields, 'reservations']
         }
-        return full ? {
-            id: this._id,
-            ...view,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt
-        } : view
+
+        fields.forEach((field) => {
+            view[field] = this[field]
+        })
+
+        return view
     }
 }
 

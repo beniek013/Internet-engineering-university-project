@@ -1,46 +1,24 @@
+const bcrypt = require('bcrypt')
 const mongoose=require('mongoose')
-const {Schema} = require('mongoose')
-
-const ReservationSchema=new mongoose.Schema({
-    showingId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
-    seat: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    }
-}, {
-    timestamps: true
-})
-
-ReservationSchema.methods={
-    view(full) {
-        const view = {
-            // simple view
-            id: this._id,
-            showingId: this.showingId
-        }
-
-        return full ? {
-            ...view,
-            seat: this.seat
-        } : view
-    }
-}
+const roles=['user', 'admin']
+const Reservation=require('./model-reservations').ReservationSchema
 
 const UserSchema=new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        index: {unique: true}
+        unique: true,
+        trim: true,
+        lowercase: true
     },
-    firstName: {
+    password: {
         type: String,
-        required: true
+        required: true,
+        minlength: 6
     },
-    lastName: {
+    name: {
         type: String,
+        trim: true,
         required: true
     },
     born: {
@@ -50,35 +28,52 @@ const UserSchema=new mongoose.Schema({
     address: {
         type: String,
     },
-    reservations: [ReservationSchema]
+    role: {
+        type: String,
+        enum: roles,
+        default: 'user'
+    },
+    reservations: {
+        type: [Reservation]
+    }
     // discount_type: {}
 }, {
     timestamps: true
 })
 
+UserSchema.pre('save', function(next){
+    if (!this.isModified('password')) return next()
+
+    const rounds = 9
+
+    bcrypt.hash(this.password, rounds).then((hash) => {
+        this.password = hash
+        next()
+    }).catch(next)
+})
+
 UserSchema.methods = {
     view(full) {
-        const view = {
-            // simple view
-            id: this._id,
-            email: this.email
+        let view = {}
+        let fields = ['id', 'name',]
+
+        if (full) {
+            fields = [...fields, 'role', 'email', 'reservations']
         }
 
-        return full ? {
-            ...view,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            born: this.born,
-            address: this.address,
-            reservations: this.reservations.map((res) => res.view(true)),
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt
-        } : {
-            ...view,
-            reservations: this.reservations.length
-        }
+        fields.forEach((field) => {
+            view[field] = this[field]
+        })
+
+        return view
+    },
+
+    authenticate(password) {
+        return bcrypt.compare(password, this.password).then((valid) => valid ? this : false)
     }
 }
+
+UserSchema.statics={roles}
 
 const model = mongoose.model('User', UserSchema)
 

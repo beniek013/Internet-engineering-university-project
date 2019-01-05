@@ -1,28 +1,38 @@
 const { success, notFound } = require('../../services/response/')
 const User=require('./model').model
+const { sign } = require('../../services/jwt')
 
-// create new customer
-const create = ({body}, res, next) =>
-    User.create(body)
-    .then((user) => user.view(true))
-    .then(success(res, 201))
-    .catch(next)
-
-// show all (short)
+// show all (short) - WORKS
 const index = ({query}, res, next) =>
     User.find(query)
     .then((user) => user.map((user) => user.view()))
     .then(success(res))
     .catch(next)
 
-// show one (detailed)
+// show one (detailed) - WIP
 const show = ({params}, res, next) =>
-    User.findById({_id: params.id})
+    User.findOne(params.id)
     .then(notFound(res))
     .then((user) => user ? user.view(true) : null)
     .then(success(res))
     .catch(next)
 
+// create new customer - WORKS
+const create = ({body}, res, next) =>
+    User.create(body)
+    .then((user) => user.view(true))
+    .then(success(res, 201))
+    .catch(next)
+
+// authorize password - WORKS
+const auth = (req, res, next) => {
+    const { user } = req
+    sign(user)
+        .then((token) => ({token, user: user.view(true)}))
+        .then(success(res, 201))
+        .catch(next)
+    }
+    
 // update
 const update = ({body, params}, res, next) =>
     User.findById({_id: params.id})
@@ -42,6 +52,6 @@ const destroy = ({params}, res, next) =>
 
 
 module.exports = {
-    create, index, show, update, destroy
+    create, index, show, update, destroy, auth
 }
     
