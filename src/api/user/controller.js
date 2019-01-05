@@ -9,9 +9,9 @@ const index = ({query}, res, next) =>
     .then(success(res))
     .catch(next)
 
-// show one (detailed) - WIP
-const show = ({params}, res, next) =>
-    User.findOne(params.id)
+// show one (detailed) - WORKS w/ ?id=*
+const show = ({query}, res, next) =>
+    User.findById(query.id.match(/[a-z0-9]{24}/)[0])
     .then(notFound(res))
     .then((user) => user ? user.view(true) : null)
     .then(success(res))
@@ -33,16 +33,16 @@ const auth = (req, res, next) => {
         .catch(next)
     }
     
-// update
-const update = ({body, params}, res, next) =>
-    User.findById({_id: params.id})
+// update - WORKS w/ ?id=*
+const update = ({body, query}, res, next) =>
+    User.findById(query.id.match(/[a-z0-9]{24}/)[0])
     .then(notFound(res))
-    .then((user) => user ? Object.assign(customer, body).save() : null)
+    .then((user) => user ? Object.assign(user, body).save() : null)
     .then((user) => user ? user.view(true) : null)
     .then(success(res))
     .catch(next)
 
-// delete
+// delete - WORKS
 const destroy = ({params}, res, next) =>
     User.findById({_id: params.id})
     .then(notFound(res))

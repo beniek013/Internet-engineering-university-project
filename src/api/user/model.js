@@ -31,7 +31,8 @@ const UserSchema=new mongoose.Schema({
     role: {
         type: String,
         enum: roles,
-        default: 'user'
+        default: 'user',
+        required: true
     },
     reservations: {
         type: [Reservation]
