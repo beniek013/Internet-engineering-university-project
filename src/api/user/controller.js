@@ -2,29 +2,29 @@ const { success, notFound } = require('../../services/response/')
 const User=require('./model').model
 const { sign } = require('../../services/jwt')
 
-// show all (short)
+// show all (short) - WORKS
 const index = ({query}, res, next) =>
     User.find(query)
     .then((user) => user.map((user) => user.view()))
     .then(success(res))
     .catch(next)
 
-// show one (detailed)
+// show one (detailed) - WIP
 const show = ({params}, res, next) =>
-    User.findById({_id: params.id})
+    User.findOne(params.id)
     .then(notFound(res))
     .then((user) => user ? user.view(true) : null)
     .then(success(res))
     .catch(next)
 
-// create new customer
+// create new customer - WORKS
 const create = ({body}, res, next) =>
     User.create(body)
     .then((user) => user.view(true))
     .then(success(res, 201))
     .catch(next)
 
-// authorize password
+// authorize password - WORKS
 const auth = (req, res, next) => {
     const { user } = req
     sign(user)
