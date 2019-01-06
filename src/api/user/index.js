@@ -29,11 +29,11 @@ router.delete('/:id',
   token({required: true, roles: ['admin']}),
   destroy)
 
-router.get('/:id/reservations',
+router.get('/reservations/:id',
   token({required:true}),
   showReservation)
 
-router.post('/:id/reservations',
+router.post('/reservations/:id/:seat/:showing',
   token({ required: true }),
   createReservation
 )

@@ -23,9 +23,9 @@ app.get('/', (req, res) => {
     res.status(200).send('working??')
 });
 app.use('/movie', movie)
-app.use('/user', user)
 app.use('/room', room)
 app.use('/showing', showing)
+app.use('/user', user)
 
 
 setImmediate(() => {
